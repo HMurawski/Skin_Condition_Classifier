@@ -1,2 +1,7 @@
+torch
+torchvision
+tqdm
+pillow
+numpy
+scikit-learn
 streamlit
-Pillow
