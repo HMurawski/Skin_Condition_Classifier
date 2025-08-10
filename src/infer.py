@@ -10,7 +10,6 @@ def load_classes():
         return [l.strip() for l in f.readlines()]
 
 def get_tf():
-    # Keep eval transform consistent with training eval pipeline
     return transforms.Compose([
         transforms.Resize((IMG_SIZE, IMG_SIZE)),
         transforms.ToTensor(),
@@ -26,13 +25,17 @@ def load_model():
     return model, classes, device
 
 def predict_image(path: str, threshold: float = None):
-    """Return (final_label, confidence, probs_dict, extra_info)."""
+    """Legacy: predict from file path (kept for compatibility)."""
+    img = Image.open(path).convert("RGB")
+    return predict_pil(img, threshold)
+
+def predict_pil(img: Image.Image, threshold: float = None):
+    """Predict directly from a PIL Image without saving to disk."""
     thr = PRED_THRESHOLD if threshold is None else threshold
     model, classes, device = load_model()
     tf = get_tf()
 
-    # Respect EXIF orientation (common on phone photos)
-    img = Image.open(path).convert("RGB")
+    # Honor phone EXIF orientation
     img = ImageOps.exif_transpose(img)
 
     x = tf(img).unsqueeze(0).to(device)
@@ -40,20 +43,18 @@ def predict_image(path: str, threshold: float = None):
         logits = model(x)
         probs = torch.softmax(logits, dim=1).cpu().squeeze().numpy()
 
-    # Sort classes by probability
     order = probs.argsort()[::-1]
     top1_idx, top2_idx = order[0], order[1]
     top1_p, top2_p = float(probs[top1_idx]), float(probs[top2_idx])
     top1, top2 = classes[top1_idx], classes[top2_idx]
 
-    # Uncertainty rule: below threshold -> "uncertain/healthy"
     uncertain = top1_p < thr
-    # Tie-break rule: if very close, flag as borderline (useful for UI messaging)
     borderline = (top1_p - top2_p) < 0.05
 
     final_label = "uncertain/healthy" if uncertain else top1
-    final_conf  = top1_p if not uncertain else top1_p  # we still show top1 prob
+    final_conf  = top1_p
 
-    probs_dict = {classes[i]: float(probs[i]) for i in order}  # sorted by prob (desc)
+    # return probs sorted (desc) for nicer display
+    probs_dict = {classes[i]: float(probs[i]) for i in order}
     extra = {"top1": (top1, top1_p), "top2": (top2, top2_p), "borderline": borderline, "threshold": thr}
     return final_label, final_conf, probs_dict, extra
