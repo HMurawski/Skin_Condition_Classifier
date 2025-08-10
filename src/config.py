@@ -13,7 +13,7 @@ LR = 1e-4
 WEIGHT_DECAY = 1e-4
 SEED = 42
 DEVICE = "CPU"  # change to 'cuda' later - on laptop atm
-PRED_THRESHOLD = 0.70
+PRED_THRESHOLD = 0.75
 
 MODEL_OUT = Path("artifacts")
 MODEL_OUT.mkdir(exist_ok=True, parents=True)
