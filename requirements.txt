@@ -1,7 +1,10 @@
-torch
-torchvision
-scikit-learn
-pillow
-streamlit
-opencv-python-headless
-numpy
+torch==2.3.1
+torchvision==0.18.1
+numpy>=1.26,<2.1
+pillow>=10,<11
+scikit-learn>=1.4,<1.6
+streamlit>=1.34,<1.39
+opencv-python-headless>=4.9,<4.11
+pandas>=2.2,<2.3
+tqdm>=4.66,<5
+pytest>=8.2,<9
