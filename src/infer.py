@@ -2,40 +2,64 @@
 import torch
 from PIL import Image, ImageOps
 from torchvision import transforms
+from functools import lru_cache
 from .config import BEST_WEIGHTS, CLASS_INDEX_PATH, IMG_SIZE, DEVICE, PRED_THRESHOLD
 from .model import build_model
 
+# ---- I/O helpers ------------------------------------------------------------
+
 def load_classes():
+    """Read class names (one per line) from artifacts/classes.txt."""
     with open(CLASS_INDEX_PATH, "r", encoding="utf-8") as f:
         return [l.strip() for l in f.readlines()]
 
-def get_tf():
-    return transforms.Compose([
-        transforms.Resize((IMG_SIZE, IMG_SIZE)),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485,0.456,0.406],[0.229,0.224,0.225]),
-    ])
+# Cache the eval transform (building it every call is wasteful)
+_TRANSFORM = transforms.Compose([
+    transforms.Resize((IMG_SIZE, IMG_SIZE)),
+    transforms.ToTensor(),
+    transforms.Normalize([0.485, 0.456, 0.406],
+                         [0.229, 0.224, 0.225]),
+])
 
-def load_model():
+def get_tf():
+    """Return the cached eval transform."""
+    return _TRANSFORM
+
+# ---- Model loading (cached) -------------------------------------------------
+
+@lru_cache(maxsize=1)
+def _load_model_cached():
+    """Load model once per process; cache across calls."""
     classes = load_classes()
     model = build_model(len(classes))
-    device = torch.device(DEVICE if (DEVICE.lower()=="cuda" and torch.cuda.is_available()) else "cpu")
-    model.load_state_dict(torch.load(BEST_WEIGHTS, map_location=device))
+    device = torch.device(DEVICE if (DEVICE.lower() == "cuda" and torch.cuda.is_available()) else "cpu")
+    state = torch.load(BEST_WEIGHTS, map_location=device)
+    model.load_state_dict(state)
     model.eval().to(device)
-    return model, classes, device
+    # Return classes as tuple (hashable) for lru_cache friendliness
+    return model, tuple(classes), device
+
+def load_model():
+    """Public wrapper that returns the cached (model, classes, device)."""
+    return _load_model_cached()
+
+# ---- Prediction API ---------------------------------------------------------
 
 def predict_image(path: str, threshold: float = None):
-    """Legacy: predict from file path (kept for compatibility)."""
+    """Predict from a file path (legacy helper)."""
     img = Image.open(path).convert("RGB")
     return predict_pil(img, threshold)
 
 def predict_pil(img: Image.Image, threshold: float = None):
-    """Predict directly from a PIL Image without saving to disk."""
+    """
+    Predict directly from a PIL Image without touching disk.
+    Returns (final_label, final_conf, probs_dict_sorted, extra_info).
+    """
     thr = PRED_THRESHOLD if threshold is None else threshold
     model, classes, device = load_model()
     tf = get_tf()
 
-    # Honor phone EXIF orientation
+    # Honor EXIF orientation (common for phone photos)
     img = ImageOps.exif_transpose(img)
 
     x = tf(img).unsqueeze(0).to(device)
@@ -43,6 +67,7 @@ def predict_pil(img: Image.Image, threshold: float = None):
         logits = model(x)
         probs = torch.softmax(logits, dim=1).cpu().squeeze().numpy()
 
+    # Sort probabilities (desc)
     order = probs.argsort()[::-1]
     top1_idx, top2_idx = order[0], order[1]
     top1_p, top2_p = float(probs[top1_idx]), float(probs[top2_idx])
@@ -54,7 +79,13 @@ def predict_pil(img: Image.Image, threshold: float = None):
     final_label = "uncertain/healthy" if uncertain else top1
     final_conf  = top1_p
 
-    # return probs sorted (desc) for nicer display
+    # Build a dict sorted by prob for nicer UI (class -> prob)
     probs_dict = {classes[i]: float(probs[i]) for i in order}
-    extra = {"top1": (top1, top1_p), "top2": (top2, top2_p), "borderline": borderline, "threshold": thr}
+
+    extra = {
+        "top1": (top1, top1_p),
+        "top2": (top2, top2_p),
+        "borderline": borderline,
+        "threshold": thr
+    }
     return final_label, final_conf, probs_dict, extra

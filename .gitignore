@@ -1,4 +1,51 @@
-__pycache__/\
-.venv
-/data
-__pycache__
+# ---- Python / build
+__pycache__/
+*.py[cod]
+*.pyd
+*.so
+*.dll
+.ipynb_checkpoints/
+*.egg-info/
+build/
+dist/
+pip-wheel-metadata/
+*.log
+/scripts
+
+# ---- Virtual env / tooling
+.venv/
+venv/
+env/
+.env
+.env.*
+
+# ---- Editors / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.code-workspace
+
+# ---- Streamlit
+.streamlit/secrets.toml
+# keep theme config
+!.streamlit/config.toml
+
+# ---- Data (keep only tiny demo_samples)
+data/train/
+data/val/
+data/test/
+data_pool/
+data\ copy/
+
+
+# ---- Artifacts (keep only final weights + classes list)
+artifacts/*
+!artifacts/best_resnet18.pt
+!artifacts/classes.txt
+
+# ---- Misc
+*.zip
+*.7z
+*.tar
+*.tar.gz

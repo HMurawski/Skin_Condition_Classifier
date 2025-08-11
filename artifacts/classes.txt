@@ -1,0 +1,9 @@
+acne
+contact_dermatitis
+eczema
+psoriasis
+rash
+scabies
+tinea_ringworm
+urticaria
+warts

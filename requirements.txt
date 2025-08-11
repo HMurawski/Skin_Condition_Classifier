@@ -1,7 +1,7 @@
 torch
 torchvision
-tqdm
-pillow
-numpy
 scikit-learn
+pillow
 streamlit
+opencv-python-headless
+numpy
