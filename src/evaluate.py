@@ -3,7 +3,7 @@ import numpy as np
 import torch
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, f1_score
 
-from .config import BEST_WEIGHTS, CLASS_INDEX_PATH, DEVICE, PRED_THRESHOLD
+from .config import BEST_WEIGHTS, DEVICE, PRED_THRESHOLD
 from .data import get_dataloaders
 from .model import build_model
 from .utils import set_seed, get_device, load_checkpoint

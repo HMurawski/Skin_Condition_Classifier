@@ -10,8 +10,14 @@ build/
 dist/
 pip-wheel-metadata/
 *.log
-/scripts
-
+# ---- non-reusable scripts
+scripts/build_demo_samples.py
+scripts/consolodate_pool.py
+scripts/dummy_model.py
+scripts/healthy_skin_downloader.py
+scripts/jpg_changer.py
+scripts/split.py
+/tests
 # ---- Virtual env / tooling
 .venv/
 venv/

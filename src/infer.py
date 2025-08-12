@@ -10,8 +10,10 @@ from .model import build_model
 
 def load_classes():
     """Read class names (one per line) from artifacts/classes.txt."""
+    if not CLASS_INDEX_PATH.exists():
+        raise FileNotFoundError(f"Missing {CLASS_INDEX_PATH}. Train first.")
     with open(CLASS_INDEX_PATH, "r", encoding="utf-8") as f:
-        return [l.strip() for l in f.readlines()]
+        return [l.strip() for l in f if l.strip()]
 
 # Cache the eval transform (building it every call is wasteful)
 _TRANSFORM = transforms.Compose([

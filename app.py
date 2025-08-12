@@ -101,8 +101,12 @@ if analyze_clicked:
     if img_to_analyze is None:
         st.warning("Please upload or select a sample image first.")
     else:
-        with st.spinner("Analyzing..."):
-            label, conf, probs, extra = predict_pil(img_to_analyze, threshold=thr)
+        try:
+            with st.spinner("Analyzing..."):
+                label, conf, probs, extra = predict_pil(img_to_analyze, threshold=thr)
+        except Exception as e:
+            st.error("Prediction failed. Try a clearer JPG/PNG or reload the app.")
+            st.stop()
             
         left, right = st.columns([2, 1])
 
