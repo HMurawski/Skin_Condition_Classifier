@@ -1,7 +1,7 @@
 from pathlib import Path
 import os
 
-# Optionally load variables from a local .env (ignored in git)
+# Optionally load variables from a local .env
 try:
     from dotenv import load_dotenv
     load_dotenv(override=False)

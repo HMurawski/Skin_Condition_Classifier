@@ -1,4 +1,3 @@
-# src/train.py
 import torch
 from torch import nn
 from torch.optim import AdamW
@@ -45,12 +44,12 @@ def main():
     # Data
     train_loader, val_loader, test_loader, classes = get_dataloaders()
 
-    # Compute class weights from the training set (ImageFolder stores (path, class_idx))
+    # Compute class weights from the training set
     counts = Counter([label for _, label in train_loader.dataset.samples])
     num_classes = len(train_loader.dataset.classes)
     freq = torch.tensor([counts[i] for i in range(num_classes)], dtype=torch.float)
     
-    # Inverse-frequency weights normalized to sum to num_classes (stability)
+    # Inverse-frequency weights normalized to sum to num_classes
     weights = (1.0 / (freq + 1e-6))
     weights = num_classes * (weights / weights.sum())
     weights = weights.to(device)
@@ -58,7 +57,7 @@ def main():
     log.info("Class weights: %s", weights.tolist())
     
     
-    # Save classes order (for inference/Streamlit)
+    # Save classes order for UI
     CLASS_INDEX_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(CLASS_INDEX_PATH, "w", encoding="utf-8") as f:
         for c in classes:
@@ -69,7 +68,7 @@ def main():
     model = build_model(num_classes=len(classes)).to(device)
     criterion = nn.CrossEntropyLoss(weight=weights, label_smoothing=0.05)
     optimizer = AdamW(model.parameters(), lr=LR, weight_decay=WEIGHT_DECAY)
-    scheduler = ReduceLROnPlateau(optimizer, mode="max", factor=0.5, patience=2)  # no verbose for compatibility
+    scheduler = ReduceLROnPlateau(optimizer, mode="max", factor=0.5, patience=2) 
     
     metrics_path = "artifacts/metrics.csv"
     os.makedirs("artifacts", exist_ok=True)

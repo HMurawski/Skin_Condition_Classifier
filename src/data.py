@@ -14,7 +14,6 @@ def get_transforms():
     transforms.RandomResizedCrop(IMG_SIZE, scale=(0.8, 1.0)),
     transforms.RandomHorizontalFlip(),
     transforms.RandomRotation(10),
-    # Keep jitter mild; you can comment this out if it hurts
     transforms.ColorJitter(brightness=0.10, contrast=0.10, saturation=0.10, hue=0.03),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -57,7 +56,6 @@ def get_dataloaders():
     return train_loader, val_loader, test_loader, train_ds.classes
 
 if __name__ == "__main__":
-    #run: `python -m src.data`
     train_loader, val_loader, test_loader, classes = get_dataloaders()
     print("Classes (order = indicies):", classes)
     print("Batch number train/val/test:",

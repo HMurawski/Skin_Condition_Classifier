@@ -1,4 +1,3 @@
-# src/evaluate.py
 import argparse
 import numpy as np
 import torch
@@ -85,7 +84,7 @@ def main():
             log.warning("[SWEEP] No confident samples across thresholds.")
         return
 
-    # Single-threshold evaluation (uses PRED_THRESHOLD from config)
+    # Single-threshold evaluation
     res = evaluate_with_threshold(y_true, y_pred, maxp, classes, PRED_THRESHOLD)
     log.info("[EVAL:%s] threshold=%.2f", args.split, PRED_THRESHOLD)
     log.info("Coverage: %.3f (%d/%d)", res["coverage"], res.get("n_conf", 0), res.get("n_total", 0))
