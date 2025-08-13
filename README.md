@@ -56,30 +56,37 @@ As a parent, I wanted a **cautious, accessible tool** to triage rashes and frequ
 ---
 
 ## Results
+### Model Performance @ Confidence Threshold 0.75
 
-**Validation (thr=0.75)**  
-Coverage **0.766** (2294/2994) • Acc(conf) **0.9738** • Macro-F1(conf) **0.9501**
+| Split | Coverage | Confident Accuracy | Macro F1-Score | Total Samples |
+|-------|----------|-------------------|----------------|---------------|
+| **Validation** | 76.6% (2,294/2,994) | **97.38%** | **95.01%** | 2,994 |
+| **Test** | 77.9% (2,315/2,970) | **97.54%** | **93.82%** | 2,970 |
 
-**Test (thr=0.75)**  
-Coverage **0.779** (2315/2970) • Acc(conf) **0.9754** • Macro-F1(conf) **0.9382**
+### Threshold Analysis (Validation Set)
+- Lower Threshold (0.50) → High Coverage (91.7%) but Lower Precision (94.1%)
+- Higher Threshold (0.85) → Lower Coverage (64.5%) but Higher Precision (98.6%)
 
 <details>
-<summary>Threshold sweep (validation)</summary>
+<summary><strong>📋 Complete Threshold Sweep Results</strong></summary>
 
-| threshold | coverage | acc(conf) | macro-F1(conf) |
-|-----------|----------|-----------|----------------|
-| 0.50 | 0.917 | 0.9410 | 0.9063 |
-| 0.55 | 0.897 | 0.9483 | 0.9166 |
-| 0.60 | 0.868 | 0.9550 | 0.9238 |
-| 0.65 | 0.843 | 0.9623 | 0.9346 |
-| 0.70 | 0.813 | 0.9692 | 0.9475 |
-| **0.75** | **0.766** | **0.9738** | **0.9501** |
-| 0.80 | 0.725 | 0.9774 | 0.9551 |
-| 0.85 | 0.645 | 0.9855 | 0.9775 |
-| 0.90 | 0.529 | 0.9886 | 0.9851 |
+| Threshold | Coverage | Confident Accuracy | Macro F1-Score |
+|-----------|----------|-------------------|----------------|
+| 0.50 | 91.7% | 94.10% | 90.63% |
+| 0.55 | 89.7% | 94.83% | 91.66% |
+| 0.60 | 86.8% | 95.50% | 92.38% |
+| 0.65 | 84.3% | 96.23% | 93.46% |
+| 0.70 | 81.3% | 96.92% | 94.75% |
+| **0.75** | **76.6%** | **97.38%** | **95.01%** |
+| 0.80 | 72.5% | 97.74% | 95.51% |
+| 0.85 | 64.5% | 98.55% | 97.75% |
+| 0.90 | 52.9% | 98.86% | 98.51% |
+
 </details>
 
-> **Interpretation:** higher thresholds reduce coverage (the app abstains more often) but increase quality on the confident subset — desired for cautious triage.
+> **💡 Clinical Insight:** The default threshold (0.75) balances coverage and precision for practical triage scenarios. Higher thresholds prioritize accuracy over coverage, enabling "better safe than sorry" decision making in healthcare contexts.
+
+
 
 ---
 
@@ -161,6 +168,7 @@ test_threshold.py — ensures uncertainty behavior (uncertain/healthy) at high t
 ---
 ## License
 This project is released under the MIT License. See the LICENSE file for details.
+
 
 
 
