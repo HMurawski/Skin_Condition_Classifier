@@ -8,3 +8,4 @@ opencv-python-headless>=4.9,<4.11
 pandas>=2.2,<2.3
 tqdm>=4.66,<5
 pytest>=8.2,<9
+python-dotenv>=1.0,<2
