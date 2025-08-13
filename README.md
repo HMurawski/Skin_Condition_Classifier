@@ -44,7 +44,53 @@ As a parent, I wanted a **cautious, accessible tool** to triage rashes and frequ
 
 ---
 ## How it works
----
+### Overall Flow
+- **Image Input**: An image is either uploaded or selected from a sample gallery.
+- **Preprocessing**: The image is resized, normalized, and its EXIF orientation is corrected.
+- **Model Inference**: The processed image is fed into a **ResNet18** model.
+- **Probability & Prediction**: The model outputs **Softmax probabilities**.
+    - If the maximum probability is **less than a set threshold**, the result is classified as **"uncertain/healthy"**.
+    - If the maximum probability is **greater than or equal to the threshold**, the corresponding class with the highest probability is the **predicted class**.
+- **UI Output**: The user interface displays the result, along with a probability chart.
+
+### Preprocessing
+- **Training**: Images are augmented using `RandomResizedCrop`, `HorizontalFlip`, `Rotation`, and `ColorJitter`, followed by normalization with ImageNet mean/std.
+- **Validation/Testing**: Images are simply resized and normalized.
+
+### Model
+- A **ResNet18** architecture is used, initialized with **ImageNet** pretrained weights.
+- The final fully connected layer is replaced to match the number of classes.
+- The model runs on the best available device (`auto/cuda/cpu`) with a deterministic seed.
+
+### Training
+- **Optimizer**: `AdamW` is used with a set learning rate (`LR`) and `weight_decay`.
+- **Loss Function**: `CrossEntropyLoss` with label smoothing (0.05) and class weights (inverse frequency) is used.
+- **Scheduler**: `ReduceLROnPlateau` is used to adjust the learning rate based on the validation macro-F1 score.
+- **Artifacts**:
+    - The best model is saved as `best_resnet18.pt`.
+    - Class order is stored in `classes.txt`.
+    - Per-epoch metrics (`epoch,val_acc,val_f1,lr`) are logged in `metrics.csv`.
+
+### Evaluation
+- **Process**: Logits are collected and converted to softmax probabilities.
+- **Metrics**:
+    - Metrics (`coverage`, `accuracy`, `macro-F1`) are reported on a "confident subset" of predictions (where `max_prob ≥ threshold`).
+    - A threshold sweep from 0.50 to 0.90 is performed to analyze the trade-off between coverage and quality.
+- **Reports**: A full `classification_report` and a confusion matrix are generated for all labels.
+
+### Inference
+- The model is loaded once and cached for efficiency.
+- An input PIL image is preprocessed and passed to the model to get logits and probabilities.
+- If the top probability is below the threshold, the output is "uncertain/healthy". Otherwise, it returns the predicted class.
+- The UI also shows the top-2 probabilities and flags "borderline cases" where the difference between the top two probabilities is less than 0.05.
+
+### UI (Streamlit)
+- **Inputs**: A gallery of sample images for each class and a file uploader.
+- **Controls**: A slider to adjust the prediction abstention threshold.
+- **Outputs**:
+    - A bar chart of prediction probabilities.
+    - A glossary of conditions.
+    - Tips for taking photos.
 
 ---
 
@@ -183,6 +229,7 @@ test_threshold.py — ensures uncertainty behavior (uncertain/healthy) at high t
 ---
 ## License
 This project is released under the MIT License. See the LICENSE file for details.
+
 
 
 
