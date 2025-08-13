@@ -1,4 +1,4 @@
-# 🩺 Skin Disease Classifier
+# 🩺 Skin Condition Classifier
 
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C.svg)](https://pytorch.org/)
@@ -49,7 +49,22 @@ As a parent, I wanted a **cautious, accessible tool** to triage rashes and frequ
 ---
 
 ## Data
-- DermNet-based dataset. Examples of included classes: acne, contact_dermatitis, eczema, psoriasis, rash, scabies, tinea_ringworm, urticaria, warts.
+### Supported Conditions
+
+The model classifies 9 common dermatological conditions with high accuracy:
+
+| Condition | Clinical Description | Key Visual Features |
+|-----------|---------------------|-------------------|
+| **Acne** | Clogged hair follicles causing inflammatory lesions | Comedones, papules, pustules on face/back |
+| **Contact Dermatitis** | Allergic or irritant reaction to external substances | Localized red, itchy rash at contact site |
+| **Eczema** | Chronic inflammatory skin condition | Dry, scaly patches in flexural areas |
+| **Psoriasis** | Autoimmune condition with rapid skin cell turnover | Well-demarcated plaques with silvery scales |
+| **Rash** | General term for widespread skin inflammation | Non-specific redness, may be viral/bacterial |
+| **Scabies** | Parasitic mite infestation causing intense itching | Linear burrows, especially web spaces/wrists |
+| **Tinea/Ringworm** | Fungal infection of skin, hair, or nails | Ring-shaped lesions with raised, scaly borders |
+| **Urticaria** | Allergic reaction causing temporary skin welts | Raised, itchy wheals that appear/disappear |
+| **Warts** | Viral skin growths caused by HPV | Small, rough-textured papules |
+- DermNet-based dataset. 
 - Custom stratified split 75/15/10 (train/val/test)
 -  Please check the original data licensing/terms if you plan to use or redistribute the dataset. This project is educational/research-only
 
@@ -97,8 +112,8 @@ As a parent, I wanted a **cautious, accessible tool** to triage rashes and frequ
 
 ```bash
 # 1) Clone & enter
-git clone https://github.com/your-user/skin-disease-classifier-mvp.git
-cd skin-disease-classifier-mvp
+git clone (https://github.com/HMurawski/Skin_Condition_Classifier)
+cd skin_condition_classifier
 
 # 2) (Optional) create venv
 python -m venv .venv
@@ -168,6 +183,7 @@ test_threshold.py — ensures uncertainty behavior (uncertain/healthy) at high t
 ---
 ## License
 This project is released under the MIT License. See the LICENSE file for details.
+
 
 
 
