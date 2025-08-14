@@ -8,6 +8,11 @@
 
 **Live demo:** https://hm-ai-skin-classifier.streamlit.app/  
 **Status:** Research MVP (not a medical device)
+<p align="center">
+  <a href="https://hm-ai-skin-classifier.streamlit.app/">
+    <img src="assets/Skin_Condition_Classifier.gif" alt="Skin Condition Classifier – Streamlit demo" width="900">
+  </a>
+</p>
 
 This app classifies common skin conditions from a photo and **abstains when uncertain** (returns `uncertain/healthy` below a confidence threshold).  
 It’s designed for *cautious triage*, not diagnosis.
@@ -230,6 +235,7 @@ test_threshold.py — ensures uncertainty behavior (uncertain/healthy) at high t
 ---
 ## License
 This project is released under the MIT License. See the LICENSE file for details.
+
 
 
 
