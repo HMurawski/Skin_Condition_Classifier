@@ -8,6 +8,11 @@
 
 **Live demo:** https://hm-ai-skin-classifier.streamlit.app/  
 **Status:** Research MVP (not a medical device)
+<p align="center">
+  <a href="https://hm-ai-skin-classifier.streamlit.app/">
+    <img src="assets/Skin_Condition_Classifier.gif" alt="Skin Condition Classifier – Streamlit demo" width="900">
+  </a>
+</p>
 
 This app classifies common skin conditions from a photo and **abstains when uncertain** (returns `uncertain/healthy` below a confidence threshold).  
 It’s designed for *cautious triage*, not diagnosis.
@@ -25,7 +30,9 @@ It’s designed for *cautious triage*, not diagnosis.
 - [Project structure](#project-structure)
 - [Evaluation & Tests](#evaluation--tests)
 - [Safety & Limitations](#safety--limitations)
+- [Troubleshooting](#troubleshooting)
 - [Acknowledgements](#acknowledgements)
+- [Contact & Feedback](#contact--feedback)
 - [License](#license)
 
 ---
@@ -55,7 +62,7 @@ As a parent, I wanted a **cautious, accessible tool** to triage rashes and frequ
 - **UI Output**: The user interface displays the result, along with a probability chart.
 
 ### Preprocessing
-- **Training**: Images are augmented using `RandomResizedCrop`, `HorizontalFlip`, `Rotation`, and `ColorJitter`, followed by normalization with ImageNet mean/std.
+- **Training**: Images are augmented using `RandomResizedCrop`, `RandomHorizontalFlip`, `RandomRotation`, and `ColorJitter`, followed by normalization with ImageNet mean/std.
 - **Validation/Testing**: Images are simply resized and normalized.
 
 ### Model
@@ -114,7 +121,11 @@ The model classifies 9 common dermatological conditions with high accuracy:
 - DermNet-based dataset. 
 - Custom stratified split 75/15/10 (train/val/test)
 -  Please check the original data licensing/terms if you plan to use or redistribute the dataset. This project is educational/research-only
-
+### Dataset Statistics
+- Total images: ~20,000
+- Images per class: 500-2,000
+- Resolution: 224x224 (resized from various)
+- **Image credits:** Images © DermNet (dermnetnz.org), used for research/education; watermark preserved. Please review original licence/terms before reuse.
 ---
 
 ## Results
@@ -159,8 +170,8 @@ The model classifies 9 common dermatological conditions with high accuracy:
 
 ```bash
 # 1) Clone & enter
-git clone (https://github.com/HMurawski/Skin_Condition_Classifier)
-cd skin_condition_classifier
+git clone https://github.com/HMurawski/Skin_Condition_Classifier.git
+cd Skin_Condition_Classifier
 
 # 2) (Optional) create venv
 python -m venv .venv
@@ -179,7 +190,13 @@ streamlit run app.py
 ## Configuration
 - This project is ENV-driven (see src/config.py).
 - Create your own .env (not committed) or use .env.example as a template.
-
+### env (example)
+```
+DEVICE=auto        # auto|cuda|cpu
+THRESHOLD=0.75
+MODEL_PATH=artifacts/best_resnet18.pt
+CLASS_INDEX_PATH=artifacts/classes.txt
+```
 ---
 ## Project Structure
 ```
@@ -224,12 +241,26 @@ test_threshold.py — ensures uncertainty behavior (uncertain/healthy) at high t
 - Abstention by design: the app returns uncertain/healthy when confidence < threshold.
 - Out-of-distribution: rare conditions or atypical presentations may be misclassified or flagged as uncertain.
 ---
+## Troubleshooting
+- **Low accuracy on your images?** → Check photo quality guidelines
+- **"uncertain" results?** → Try adjusting threshold or retaking photo
+- **Streamlit doesn’t start?** Check Python 3.11+ and `pip install -r requirements.txt`.
+---
 ## Acknowledgements
 - DermNet-sourced images via public Kaggle mirror (educational dermatology imagery). Please review original sources for licensing and usage constraints.
 - Libraries: PyTorch, TorchVision, Streamlit, scikit-learn, and the open-source community.
 ---
+## Contact & Feedback
+- Email: [hubertmurawski9@gmail.com](mailto:hubertmurawski9@gmail.com?subject=Skin%20Condition%20Classifier%20—%20Inquiry)
+- LinkedIn: [Hubert Murawski](https://www.linkedin.com/in/hubert-murawski-98b3ba279/)
+- Issues: [Open a bug/feature request](https://github.com/HMurawski/Skin_Condition_Classifier/issues/new)
+> **Privacy note:** Please don’t send photos of real patients or personal health information.  
+> This app is a research/portfolio demo — **not** a medical device.
+---
 ## License
 This project is released under the MIT License. See the LICENSE file for details.
+
+
 
 
 
