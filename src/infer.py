@@ -1,4 +1,3 @@
-# src/infer.py
 import torch
 from PIL import Image, ImageOps
 from torchvision import transforms
@@ -6,7 +5,7 @@ from functools import lru_cache
 from .config import BEST_WEIGHTS, CLASS_INDEX_PATH, IMG_SIZE, DEVICE, PRED_THRESHOLD
 from .model import build_model
 
-# ---- I/O helpers ------------------------------------------------------------
+# ---- I/O helpers ----------
 
 def load_classes():
     """Read class names (one per line) from artifacts/classes.txt."""
@@ -38,7 +37,7 @@ def _load_model_cached():
     state = torch.load(BEST_WEIGHTS, map_location=device)
     model.load_state_dict(state)
     model.eval().to(device)
-    # Return classes as tuple (hashable) for lru_cache friendliness
+    # Return classes as tuple for lru_cache friendliness
     return model, tuple(classes), device
 
 def load_model():
@@ -48,7 +47,7 @@ def load_model():
 # ---- Prediction API ---------------------------------------------------------
 
 def predict_image(path: str, threshold: float = None):
-    """Predict from a file path (legacy helper)."""
+    """Predict from a file path."""
     img = Image.open(path).convert("RGB")
     return predict_pil(img, threshold)
 
@@ -81,7 +80,7 @@ def predict_pil(img: Image.Image, threshold: float = None):
     final_label = "uncertain/healthy" if uncertain else top1
     final_conf  = top1_p
 
-    # Build a dict sorted by prob for nicer UI (class -> prob)
+    # Build a dict sorted by prob
     probs_dict = {classes[i]: float(probs[i]) for i in order}
 
     extra = {

@@ -17,14 +17,14 @@ scripts/dummy_model.py
 scripts/healthy_skin_downloader.py
 scripts/jpg_changer.py
 scripts/split.py
-/tests
+
 # ---- Virtual env / tooling
 .venv/
 venv/
 env/
 .env
 .env.*
-
+!.env.example
 # ---- Editors / OS
 .DS_Store
 Thumbs.db

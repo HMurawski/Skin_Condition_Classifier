@@ -1,4 +1,3 @@
-# src/train.py
 import torch
 from torch import nn
 from torch.optim import AdamW
@@ -14,9 +13,13 @@ from .config import (
 from .data import get_dataloaders
 from .model import build_model
 from .utils import set_seed, get_device, save_checkpoint
+from .logging_utils import init_logger
+import csv, os
+
+
 
 @torch.no_grad()
-def validate(model, loader, device):
+def validate(model: torch.nn.Module, loader, device: torch.device):
     """Validation loop returning accuracy and macro-F1."""
     model.eval()
     y_true, y_pred = [], []
@@ -31,6 +34,9 @@ def validate(model, loader, device):
     return acc, f1m
 
 def main():
+    # Logging
+    log = init_logger(__name__)
+    
     # Seed + device
     set_seed(SEED)
     device = get_device(DEVICE)
@@ -38,36 +44,41 @@ def main():
     # Data
     train_loader, val_loader, test_loader, classes = get_dataloaders()
 
-    # Compute class weights from the training set (ImageFolder stores (path, class_idx))
+    # Compute class weights from the training set
     counts = Counter([label for _, label in train_loader.dataset.samples])
     num_classes = len(train_loader.dataset.classes)
     freq = torch.tensor([counts[i] for i in range(num_classes)], dtype=torch.float)
     
-    # Inverse-frequency weights normalized to sum to num_classes (stability)
+    # Inverse-frequency weights normalized to sum to num_classes
     weights = (1.0 / (freq + 1e-6))
     weights = num_classes * (weights / weights.sum())
     weights = weights.to(device)
-    print(f"[INFO] Class counts: {freq.tolist()}")
-    print(f"[INFO] Class weights: {weights.tolist()}")
+    log.info("Class counts: %s", freq.tolist())
+    log.info("Class weights: %s", weights.tolist())
     
     
-    # Save classes order (for inference/Streamlit)
+    # Save classes order for UI
     CLASS_INDEX_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(CLASS_INDEX_PATH, "w", encoding="utf-8") as f:
         for c in classes:
             f.write(c + "\n")
-    print(f"[INFO] Classes: {classes}")
+    log.info("Classes: %s", classes)
 
     # Model + loss + optimizer + scheduler
     model = build_model(num_classes=len(classes)).to(device)
     criterion = nn.CrossEntropyLoss(weight=weights, label_smoothing=0.05)
     optimizer = AdamW(model.parameters(), lr=LR, weight_decay=WEIGHT_DECAY)
-    scheduler = ReduceLROnPlateau(optimizer, mode="max", factor=0.5, patience=2)  # no verbose for compatibility
+    scheduler = ReduceLROnPlateau(optimizer, mode="max", factor=0.5, patience=2) 
+    
+    metrics_path = "artifacts/metrics.csv"
+    os.makedirs("artifacts", exist_ok=True)
+    with open(metrics_path, "w", newline="") as f:
+        csv.writer(f).writerow(["epoch", "val_acc", "val_f1", "lr"])
 
     best_f1 = 0.0
     for epoch in range(1, EPOCHS + 1):
         model.train()
-        pbar = tqdm(train_loader, desc=f"Epoch {epoch}/{EPOCHS}")
+        pbar = tqdm(train_loader, desc=f"Epoch {epoch}/{EPOCHS}", leave=False)
         for xb, yb in pbar:
             xb, yb = xb.to(device), yb.to(device)
             optimizer.zero_grad(set_to_none=True)
@@ -78,14 +89,18 @@ def main():
             pbar.set_postfix(loss=float(loss.detach()))
 
         val_acc, val_f1 = validate(model, val_loader, device)
-        print(f"[VAL] acc={val_acc:.4f}  f1_macro={val_f1:.4f}")
+        lr = optimizer.param_groups[0]['lr']
+        log.info("VAL acc=%.4f  f1_macro=%.4f  lr=%.6f", val_acc, val_f1, lr)
+        
+        with open(metrics_path, "a", newline="") as f:
+            csv.writer(f).writerow([epoch, f"{val_acc:.6f}", f"{val_f1:.6f}", f"{lr:.8f}"])
+            
+        
         scheduler.step(val_f1)
-        print(f"[INFO] Current LR: {optimizer.param_groups[0]['lr']:.6f}")
-
         if val_f1 > best_f1:
             best_f1 = val_f1
             save_checkpoint(model, str(BEST_WEIGHTS))
-            print(f"Saved best to {BEST_WEIGHTS} (f1_macro={best_f1:.4f})")
+            log.info("Saved best to %s (f1_macro=%.4f)", BEST_WEIGHTS, best_f1)
 
    
 

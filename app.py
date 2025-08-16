@@ -1,4 +1,3 @@
-# app.py
 import streamlit as st
 from PIL import Image, ImageOps
 from pathlib import Path
@@ -51,7 +50,7 @@ if class_to_files:
 else:
     st.sidebar.info("Put some images into 'demo_samples/<class>/' to enable samples.")
 
-# --- Sidebar tips (under the sample controls) ---
+# --- Sidebar tips  ---
 with st.sidebar.expander("📸 How to take a good photo", expanded=False):
     st.markdown(
         """
@@ -62,7 +61,7 @@ with st.sidebar.expander("📸 How to take a good photo", expanded=False):
         """
     )
 
-# (Optional) A short "About this app" in sidebar
+# "About this app" in sidebar
 with st.sidebar.expander("ℹ️ About this app", expanded=False):
     st.markdown(
         """
@@ -83,7 +82,7 @@ if uploaded is not None:
     st.session_state.input_image_pil = im
     st.session_state.input_caption = "Uploaded image"
 
-# --- Preview current image (from session_state) ---
+# --- Preview current image ---
 img_to_analyze = st.session_state.input_image_pil
 if img_to_analyze is not None:
     st.image(img_to_analyze, caption=st.session_state.input_caption or "Image", use_container_width=True)
