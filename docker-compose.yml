@@ -1,0 +1,16 @@
+# docker-compose.yml
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: skinclf:dev
+    ports:
+      - "8501:8501"
+    environment:
+      DEVICE: "cpu"
+      NUM_WORKERS: "0"
+      PRED_THRESHOLD: "0.75"
+    volumes:
+      - ./artifacts:/app/artifacts
+      - ./demo_samples:/app/demo_samples

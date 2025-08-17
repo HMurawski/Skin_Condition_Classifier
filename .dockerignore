@@ -1,0 +1,20 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+.ipynb_checkpoints/
+.git/
+.github/
+
+
+data/
+data_pool/
+data copy/
+
+
+docs/raw/
+assets/
+docs/
+artifacts/metrics.csv
