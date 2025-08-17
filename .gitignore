@@ -24,6 +24,7 @@ venv/
 env/
 .env
 .env.*
+.app.env
 !.env.example
 # ---- Editors / OS
 .DS_Store
