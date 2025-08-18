@@ -1,32 +1,40 @@
+from functools import lru_cache
+
 import torch
 from PIL import Image, ImageOps
 from torchvision import transforms
-from functools import lru_cache
-from .config import BEST_WEIGHTS, CLASS_INDEX_PATH, IMG_SIZE, DEVICE, PRED_THRESHOLD
+
+from .config import BEST_WEIGHTS, CLASS_INDEX_PATH, DEVICE, IMG_SIZE, PRED_THRESHOLD
 from .model import build_model
 
 # ---- I/O helpers ----------
+
 
 def load_classes():
     """Read class names (one per line) from artifacts/classes.txt."""
     if not CLASS_INDEX_PATH.exists():
         raise FileNotFoundError(f"Missing {CLASS_INDEX_PATH}. Train first.")
-    with open(CLASS_INDEX_PATH, "r", encoding="utf-8") as f:
+    with open(CLASS_INDEX_PATH, encoding="utf-8") as f:
         return [line.strip() for line in f if line.strip()]
 
+
 # Cache the eval transform (building it every call is wasteful)
-_TRANSFORM = transforms.Compose([
-    transforms.Resize((IMG_SIZE, IMG_SIZE)),
-    transforms.ToTensor(),
-    transforms.Normalize([0.485, 0.456, 0.406],
-                         [0.229, 0.224, 0.225]),
-])
+_TRANSFORM = transforms.Compose(
+    [
+        transforms.Resize((IMG_SIZE, IMG_SIZE)),
+        transforms.ToTensor(),
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+    ]
+)
+
 
 def get_tf():
     """Return the cached eval transform."""
     return _TRANSFORM
 
+
 # ---- Model loading (cached) -------------------------------------------------
+
 
 @lru_cache(maxsize=1)
 def _load_model_cached():
@@ -40,16 +48,20 @@ def _load_model_cached():
     # Return classes as tuple for lru_cache friendliness
     return model, tuple(classes), device
 
+
 def load_model():
     """Public wrapper that returns the cached (model, classes, device)."""
     return _load_model_cached()
 
+
 # ---- Prediction API ---------------------------------------------------------
+
 
 def predict_image(path: str, threshold: float = None):
     """Predict from a file path."""
     img = Image.open(path).convert("RGB")
     return predict_pil(img, threshold)
+
 
 def predict_pil(img: Image.Image, threshold: float = None):
     """
@@ -78,7 +90,7 @@ def predict_pil(img: Image.Image, threshold: float = None):
     borderline = (top1_p - top2_p) < 0.05
 
     final_label = "uncertain/healthy" if uncertain else top1
-    final_conf  = top1_p
+    final_conf = top1_p
 
     # Build a dict sorted by prob
     probs_dict = {classes[i]: float(probs[i]) for i in order}
@@ -87,6 +99,6 @@ def predict_pil(img: Image.Image, threshold: float = None):
         "top1": (top1, top1_p),
         "top2": (top2, top2_p),
         "borderline": borderline,
-        "threshold": thr
+        "threshold": thr,
     }
     return final_label, final_conf, probs_dict, extra

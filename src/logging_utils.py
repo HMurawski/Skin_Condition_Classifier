@@ -1,12 +1,13 @@
+import logging
 import os
 import sys
-import logging
 from logging.handlers import RotatingFileHandler
+
 
 def init_logger(name: str = "skinclf", level: int = logging.INFO):
     logger = logging.getLogger(name)
     if logger.handlers:
-        return logger  
+        return logger
 
     logger.setLevel(level)
     fmt = logging.Formatter("[%(asctime)s] %(levelname)s %(name)s: %(message)s")

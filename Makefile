@@ -22,3 +22,10 @@ up:
 
 down:
 	docker compose down
+fmt:
+	ruff format .
+	ruff check . --select I,E,F,W,UP,B,C4,ISC,N,T20,A --fix
+
+lint:
+	ruff format --check .
+	ruff check .

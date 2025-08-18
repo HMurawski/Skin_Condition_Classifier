@@ -1,13 +1,13 @@
-
-from pathlib import Path
 import random
 import shutil
+from pathlib import Path
 
 random.seed(42)
 
 SRC = Path("data_pool")  # pooled images per class (no 'healthy')
-DST = Path("data")       # will be overwritten safely into a new structure
+DST = Path("data")  # will be overwritten safely into a new structure
 SPLITS = {"train": 0.75, "val": 0.15, "test": 0.10}
+
 
 def main():
     # Create split dirs
@@ -25,15 +25,15 @@ def main():
 
         # Compute split sizes
         n_train = int(n * SPLITS["train"])
-        n_val   = int(n * SPLITS["val"])
-        n_test  = n - n_train - n_val
+        n_val = int(n * SPLITS["val"])
+        n_test = n - n_train - n_val
 
         # Ensure each split gets at least 1 if possible (n >= 3)
         if n >= 3:
             if n_train == 0:
                 n_train = 1
-            if n_val   == 0:
-                n_val   = 1
+            if n_val == 0:
+                n_val = 1
             n_test = n - n_train - n_val
             if n_test == 0:
                 # borrow one from the largest bucket
@@ -45,8 +45,8 @@ def main():
 
         buckets = {
             "train": files[:n_train],
-            "val":   files[n_train:n_train+n_val],
-            "test":  files[n_train+n_val:]
+            "val": files[n_train : n_train + n_val],
+            "test": files[n_train + n_val :],
         }
 
         for sp, flist in buckets.items():
@@ -55,9 +55,12 @@ def main():
             for f in flist:
                 shutil.copy2(str(f), out_dir / f.name)
 
-        print(f"[OK] {cls_dir.name}: train={len(buckets['train'])}, val={len(buckets['val'])}, test={len(buckets['test'])}")
+        print(
+            f"[OK] {cls_dir.name}: train={len(buckets['train'])}, val={len(buckets['val'])}, test={len(buckets['test'])}"
+        )
 
     print("[DONE] New stratified split created under 'data/'.")
+
 
 if __name__ == "__main__":
     main()

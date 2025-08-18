@@ -1,13 +1,14 @@
 import argparse
+
 import numpy as np
 import torch
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, f1_score
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score
 
 from .config import BEST_WEIGHTS, DEVICE, PRED_THRESHOLD
 from .data import get_dataloaders
-from .model import build_model
-from .utils import set_seed, get_device, load_checkpoint
 from .logging_utils import init_logger
+from .model import build_model
+from .utils import get_device, load_checkpoint, set_seed
 
 
 @torch.no_grad()
@@ -32,7 +33,7 @@ def evaluate_with_threshold(y_true, y_pred, maxp, classes, thr):
     cov = float(mask.mean())
     n_conf = int(mask.sum())
     n_total = int(mask.size)
-    
+
     yt = y_true[mask]
     yp = y_pred[mask]
     if n_conf == 0:
@@ -53,7 +54,7 @@ def evaluate_with_threshold(y_true, y_pred, maxp, classes, thr):
     rep = classification_report(
         yt,
         yp,
-        labels=all_labels,            # ważne przy maskowaniu
+        labels=all_labels,  # ważne przy maskowaniu
         target_names=classes,
         digits=4,
         zero_division=0,

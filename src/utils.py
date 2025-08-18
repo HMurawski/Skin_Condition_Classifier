@@ -1,7 +1,12 @@
+import logging
 import os
 import random
+
 import numpy as np
 import torch
+
+logger = logging.getLogger(__name__)
+
 
 def set_seed(seed: int = 42):
     """Set random seeds for reproducibility."""
@@ -12,6 +17,7 @@ def set_seed(seed: int = 42):
     # Make cuDNN deterministic (slower but reproducible)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
+
 
 def get_device(pref: str = "auto"):
     """
@@ -24,18 +30,20 @@ def get_device(pref: str = "auto"):
         device = torch.device("cpu")
     else:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"[INFO] Using device: {device}")
+    logger.info("Using device: %s", device)
     return device
+
 
 def save_checkpoint(model: torch.nn.Module, path: str):
     """Save model state_dict to a given path."""
     os.makedirs(os.path.dirname(path), exist_ok=True)
     torch.save(model.state_dict(), path)
-    print(f"[INFO] Saved model to {path}")
+    logger.info("Saved model to %s", path)
+
 
 def load_checkpoint(model: torch.nn.Module, path: str, device: torch.device):
     """Load model weights from a checkpoint file."""
     state = torch.load(path, map_location=device)
     model.load_state_dict(state)
-    print(f"[INFO] Loaded model from {path}")
+    logger.info("Loaded model from %s", path)
     return model

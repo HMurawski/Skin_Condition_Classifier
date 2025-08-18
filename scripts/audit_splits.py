@@ -4,6 +4,7 @@ from pathlib import Path
 ROOT = Path("data")
 SPLITS = ["train", "val", "test"]
 
+
 def count_images(root: Path):
     """Count number of images per class for each split."""
     stats = defaultdict(Counter)
@@ -13,6 +14,7 @@ def count_images(root: Path):
             n = sum(1 for _ in cls.glob("*.*"))
             stats[split][cls.name] = n
     return stats
+
 
 def main():
     stats = count_images(ROOT)
@@ -34,6 +36,7 @@ def main():
         missing = [sp for sp in SPLITS if stats[sp].get(c, 0) == 0]
         if missing:
             print(f"- {c}: missing in {missing}")
+
 
 if __name__ == "__main__":
     main()

@@ -1,24 +1,25 @@
-import streamlit as st
 import logging
-from PIL import Image, ImageOps
 from pathlib import Path
-from src.infer import predict_pil
-from src.config import PRED_THRESHOLD
+
 import pandas as pd
+import streamlit as st
+from PIL import Image, ImageOps
+
+from src.config import PRED_THRESHOLD
+from src.infer import predict_pil
 
 st.set_page_config(page_title="Skin Condition Classifier", layout="centered")
 st.title("Skin Condition Classifier")
 
 st.caption(
-    "This is a research prototype, not a medical device. "
-    "For concerning or worsening symptoms, consult a clinician."
+    "This is a research prototype, not a medical device. For concerning or worsening symptoms, consult a clinician."
 )
 
 # --- Init session state ---
 if "input_image_pil" not in st.session_state:
     st.session_state.input_image_pil = None  # currently selected image (PIL)
 if "input_caption" not in st.session_state:
-    st.session_state.input_caption = None    # caption for the preview
+    st.session_state.input_caption = None  # caption for the preview
 
 # --- Sidebar: filter by class and choose a demo sample ---
 st.sidebar.header("Try sample images")
@@ -30,7 +31,7 @@ thr = st.sidebar.slider("Decision threshold", 0.50, 0.95, PRED_THRESHOLD, 0.01)
 if sample_dir.exists():
     # Build a dict: class -> list of files (search recursively)
     for cls_dir in sorted([p for p in sample_dir.iterdir() if p.is_dir()]):
-        files = sorted([p for p in cls_dir.rglob("*") if p.is_file() and p.suffix.lower() in {".jpg",".jpeg",".png"}])
+        files = sorted([p for p in cls_dir.rglob("*") if p.is_file() and p.suffix.lower() in {".jpg", ".jpeg", ".png"}])
         if files:
             class_to_files[cls_dir.name] = files
 
@@ -40,7 +41,9 @@ if class_to_files:
 
     files = class_to_files.get(sel_cls, [])
     file_labels = [f.relative_to(sample_dir).as_posix() for f in files]
-    idx = st.sidebar.selectbox("Image", list(range(len(files))), format_func=lambda i: file_labels[i], key="demo_image_idx")
+    idx = st.sidebar.selectbox(
+        "Image", list(range(len(files))), format_func=lambda i: file_labels[i], key="demo_image_idx"
+    )
 
     if st.sidebar.button("Use selected sample"):
         # Load the chosen sample and store in session state
@@ -76,7 +79,7 @@ without overconfident guesses.
 
 
 # --- Main uploader (overrides the current sample if provided) ---
-uploaded = st.file_uploader("Upload a close, well-lit photo (JPG/PNG)", type=["jpg","jpeg","png"])
+uploaded = st.file_uploader("Upload a close, well-lit photo (JPG/PNG)", type=["jpg", "jpeg", "png"])
 if uploaded is not None:
     im = Image.open(uploaded).convert("RGB")
     im = ImageOps.exif_transpose(im)
@@ -88,7 +91,7 @@ img_to_analyze = st.session_state.input_image_pil
 if img_to_analyze is not None:
     st.image(img_to_analyze, caption=st.session_state.input_caption or "Image", use_container_width=True)
 
-col1, col2 = st.columns([1,1])
+col1, col2 = st.columns([1, 1])
 with col1:
     analyze_clicked = st.button("Analyze")
 with col2:
@@ -108,7 +111,7 @@ if analyze_clicked:
             logging.exception("Prediction failed during inference")
             st.error("Prediction failed. Try a clearer JPG/PNG or reload the app.")
             st.stop()
-            
+
         left, right = st.columns([2, 1])
 
         with left:
@@ -142,7 +145,7 @@ if analyze_clicked:
                 "scabies": "Intensely itchy burrows; web spaces, wrists.",
                 "tinea_ringworm": "Ring-shaped scaly border (fungal).",
                 "urticaria": "Transient raised wheals/hives; migratory.",
-                "warts": "Small rough papules due to HPV."
+                "warts": "Small rough papules due to HPV.",
             }
             # Show the predicted class first (if confident)
             if label in GLOSSARY:
@@ -153,5 +156,3 @@ if analyze_clicked:
                 if cls != label:
                     st.markdown(f"**{cls}** — {desc}")
             st.caption("_Descriptions are simplified and not diagnostic._")
-        
-            

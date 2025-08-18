@@ -1,13 +1,14 @@
 [tool.ruff]
-line-length = 100
+line-length = 120
 target-version = "py311"
-exclude = ["artifacts", "demo_samples", "data", "notebooks", ".venv"]
 
 [tool.ruff.lint]
-select = ["E","F","I","UP","N","B","C4","T20","ISC","W","A"]
-ignore = []
+select = ["E", "F", "W", "UP", "B", "C4", "ISC", "N", "T20", "A", "I"]
+ignore = ["E501"]  
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/*.py" = ["T201"]
+"src/data.py"   = ["T201"]
 
 [tool.ruff.format]
-quote-style = "double"
-indent-style = "space"
-line-ending = "lf"
+quote-style = "preserve"

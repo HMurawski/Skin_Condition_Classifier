@@ -1,7 +1,9 @@
 import numpy as np
 from PIL import Image
-from src.data import get_transforms
+
 from src.config import IMG_SIZE
+from src.data import get_transforms
+
 
 def test_eval_transform_shape_and_scale():
     _, eval_tf = get_transforms()
