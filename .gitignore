@@ -56,3 +56,5 @@ artifacts/*
 *.7z
 *.tar
 *.tar.gz
+.ruff_cache
+.pytest_cache

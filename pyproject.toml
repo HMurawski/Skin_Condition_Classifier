@@ -1,0 +1,14 @@
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "UP", "B", "C4", "ISC", "N", "T20", "A", "I"]
+ignore = ["E501"]  
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/*.py" = ["T201"]
+"src/data.py"   = ["T201"]
+
+[tool.ruff.format]
+quote-style = "preserve"

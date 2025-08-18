@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.DS_Store
+.git/
+.github/
+tests/
+scripts/
+data/
+notebooks/
+*.ipynb_checkpoints/
+docs/

@@ -1,6 +1,8 @@
 import torch
-from src.model import build_model
+
 from src.config import IMG_SIZE
+from src.model import build_model
+
 
 def test_forward_shape():
     m = build_model(num_classes=3).eval()
