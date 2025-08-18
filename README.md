@@ -5,6 +5,9 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C.svg)](https://pytorch.org/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.x-FF4B4B.svg)](https://streamlit.io/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![docker](https://github.com/HMurawski/Skin_Condition_Classifier/actions/workflows/docker.yml/badge.svg)](../../actions/workflows/docker.yml)
+[![CI](https://github.com/HMurawski/Skin_Condition_Classifier/actions/workflows/test.yml/badge.svg)](https://github.com/HMurawski/Skin_Condition_Classifier/actions/workflows/test.yml)
+
 
 **Live demo:** https://hm-ai-skin-classifier.streamlit.app/  
 **Status:** Research MVP (not a medical device)
@@ -259,6 +262,7 @@ test_threshold.py — ensures uncertainty behavior (uncertain/healthy) at high t
 ---
 ## License
 This project is released under the MIT License. See the LICENSE file for details.
+
 
 
 
