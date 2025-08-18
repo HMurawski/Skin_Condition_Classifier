@@ -1,0 +1,13 @@
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = ["artifacts", "demo_samples", "data", "notebooks", ".venv"]
+
+[tool.ruff.lint]
+select = ["E","F","I","UP","N","B","C4","T20","ISC","W","A"]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
