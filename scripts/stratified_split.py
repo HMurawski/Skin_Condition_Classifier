@@ -1,6 +1,7 @@
-# scripts/stratified_split.py
+
 from pathlib import Path
-import random, shutil
+import random
+import shutil
 
 random.seed(42)
 
@@ -29,8 +30,10 @@ def main():
 
         # Ensure each split gets at least 1 if possible (n >= 3)
         if n >= 3:
-            if n_train == 0: n_train = 1
-            if n_val   == 0: n_val   = 1
+            if n_train == 0:
+                n_train = 1
+            if n_val   == 0:
+                n_val   = 1
             n_test = n - n_train - n_val
             if n_test == 0:
                 # borrow one from the largest bucket

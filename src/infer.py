@@ -12,7 +12,7 @@ def load_classes():
     if not CLASS_INDEX_PATH.exists():
         raise FileNotFoundError(f"Missing {CLASS_INDEX_PATH}. Train first.")
     with open(CLASS_INDEX_PATH, "r", encoding="utf-8") as f:
-        return [l.strip() for l in f if l.strip()]
+        return [line.strip() for line in f if line.strip()]
 
 # Cache the eval transform (building it every call is wasteful)
 _TRANSFORM = transforms.Compose([

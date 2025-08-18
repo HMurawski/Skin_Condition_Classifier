@@ -1,4 +1,6 @@
-import os, sys, logging
+import os
+import sys
+import logging
 from logging.handlers import RotatingFileHandler
 
 def init_logger(name: str = "skinclf", level: int = logging.INFO):

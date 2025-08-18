@@ -1,4 +1,5 @@
 import streamlit as st
+import logging
 from PIL import Image, ImageOps
 from pathlib import Path
 from src.infer import predict_pil
@@ -103,7 +104,8 @@ if analyze_clicked:
         try:
             with st.spinner("Analyzing..."):
                 label, conf, probs, extra = predict_pil(img_to_analyze, threshold=thr)
-        except Exception as e:
+        except Exception:
+            logging.exception("Prediction failed during inference")
             st.error("Prediction failed. Try a clearer JPG/PNG or reload the app.")
             st.stop()
             

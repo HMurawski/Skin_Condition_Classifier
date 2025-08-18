@@ -30,22 +30,44 @@ def evaluate_with_threshold(y_true, y_pred, maxp, classes, thr):
     """Metrics on confident subset (maxp >= thr) plus coverage."""
     mask = maxp >= thr
     cov = float(mask.mean())
+    n_conf = int(mask.sum())
+    n_total = int(mask.size)
+    
     yt = y_true[mask]
     yp = y_pred[mask]
-    if len(yt) == 0:
-        return {"coverage": cov, "acc": 0.0, "f1_macro": 0.0, "report": "", "cm": None}
+    if n_conf == 0:
+        return {
+            "coverage": cov,
+            "acc": 0.0,
+            "f1_macro": 0.0,
+            "report": "",
+            "cm": None,
+            "n_conf": n_conf,
+            "n_total": n_total,
+        }
+
     acc = accuracy_score(yt, yp)
     f1m = f1_score(yt, yp, average="macro")
-    rep = classification_report(yt, yp, target_names=classes, digits=4, zero_division=0)
-    cm  = confusion_matrix(yt, yp, labels=list(range(len(classes))))
+
+    all_labels = list(range(len(classes)))
+    rep = classification_report(
+        yt,
+        yp,
+        labels=all_labels,            # ważne przy maskowaniu
+        target_names=classes,
+        digits=4,
+        zero_division=0,
+    )
+    cm = confusion_matrix(yt, yp, labels=all_labels)
+
     return {
         "coverage": cov,
         "acc": acc,
         "f1_macro": f1m,
         "report": rep,
         "cm": cm,
-        "n_conf": int(mask.sum()),
-        "n_total": len(mask),
+        "n_conf": n_conf,
+        "n_total": n_total,
     }
 
 

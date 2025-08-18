@@ -1,4 +1,3 @@
-import torch
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 from .config import TRAIN_DIR, VAL_DIR, TEST_DIR, IMG_SIZE, BATCH_SIZE, NUM_WORKERS
