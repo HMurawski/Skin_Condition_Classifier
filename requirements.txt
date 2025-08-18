@@ -1,11 +1,17 @@
-torch==2.3.1
-torchvision==0.18.1
-numpy>=1.26,<2.0
-pillow>=10,<11
-scikit-learn>=1.4,<1.6
+# Linux/Windows (CI/Docker)
+torch==2.3.1 ; platform_system != "Darwin"
+torchvision==0.18.1 ; platform_system != "Darwin"
+
+# macOS arm64 (M1/M2/M3)
+torch>=2.7,<2.8 ; platform_system == "Darwin" and platform_machine == "arm64"
+torchvision>=0.22,<0.23 ; platform_system == "Darwin" and platform_machine == "arm64"
+
+numpy<2.0,>=1.26
+pillow<11,>=10
+scikit-learn<1.6,>=1.4
 streamlit>=1.40
-opencv-python-headless>=4.9,<4.11
-pandas>=2.2,<2.3
-tqdm>=4.66,<5
-pytest>=8.2,<9
-python-dotenv>=1.0,<2
+opencv-python-headless<4.11,>=4.9
+pandas<2.3,>=2.2
+tqdm<5,>=4.66
+pytest<9,>=8.2
+python-dotenv<2,>=1.0
