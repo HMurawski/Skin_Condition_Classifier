@@ -15,7 +15,7 @@ run:
 	streamlit run app.py
 
 build:
-	docker build -t skinclf:dev .
+	docker build -t skinclf:cpu .
 
 up:
 	docker compose up --build

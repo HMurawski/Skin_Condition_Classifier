@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: skinclf:dev
+    image: skinclf:cpu
     ports:
       - "8501:8501"
     environment:
